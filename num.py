@@ -34,7 +34,7 @@ while capture.isOpened():
     #For each result "r" in results
     for r in results:
         #For each box from all the boxes of the results "r"
-        for box in r.box:
+        for box in r.boxes:
             #Store the ID of each detected object
             cls = int(box.cls[0])
             #Store the confidence level of each object
@@ -45,6 +45,21 @@ while capture.isOpened():
                 #Store upper left(x1,y1) and bottom right (x2,y2) coordinates and map them to be integers
                 x1,y1,x2,y2 = map(int, box.xyxy[0])
                 #Add the detected bounding box and confidence to the list of detected trucks 
-                detections.append([x1,y1,x2,y2], conf, None)
+                detections.append(([x1,y1,x2,y2], conf, None))
+    #Pass detected trucks with frames for tracking
+    #Get back all object tracks with unique IDs
+    tracks = tracker.update_tracks(detections, frame=frame)
+    for track in tracks:
+        if track.is_confirmed():
+            track_id = track.track_id
+            ltrb = track.to_ltrb()
+            x1,y1,x2,y2 = map(int, ltrb)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
+            cv2.putText(frame, f"Truck {track_id}", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
 
-    
+    cv2.imshow("Truck Tracking", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+capture.release()
+cv2.destroyAllWindows()
