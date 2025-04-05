@@ -44,11 +44,6 @@ while capture.isOpened():
                 #Extract bounding box coordinates
                 #Store upper left(x1,y1) and bottom right (x2,y2) coordinates and map them to be integers
                 x1,y1,x2,y2 = map(int, box.xyxy[0])
-                shrink = 20
-                x1+=shrink
-                y1+=shrink
-                x2-=shrink
-                y2-=shrink
                 #Add the detected bounding box and confidence to the list of detected trucks 
                 detections.append(([x1,y1,x2,y2], conf, None))
     #Pass detected trucks with frames for tracking
@@ -64,11 +59,11 @@ while capture.isOpened():
             #Get bounding box coordinates
             ltrb = track.to_ltrb()
             x1,y1,x2,y2 = map(int, ltrb)
-            shrink = 20
-            x1+=shrink
-            y1+=shrink
-            x2-=shrink
-            y2-=shrink
+            # shrink = 100
+            # x1+=shrink
+            # y1+=shrink
+            # x2-=shrink
+            # y2-=shrink
             #Draws green box around the truck
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
             #Writes green text of Truck ID
