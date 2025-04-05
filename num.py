@@ -14,7 +14,7 @@ tracker = DeepSort(max_age=30, n_init=3, nms_max_overlap=1.0)
 #nms_max_overlap determines how much overlap between bounding boxes are allowed before they're considered dupes
 
 #Video capture ovject created to read from recording
-capture = cv2.VideoCapture("SampleTruck.mp4")
+capture = cv2.VideoCapture("../SampleTruck.mp4")
 
 #Creates a loop as long as the video feed is open
 while capture.isOpened():
@@ -27,3 +27,24 @@ while capture.isOpened():
         break
     else:
         results = model(frame)
+
+    #Creating an empty list for detected trucks
+    detections = []
+
+    #For each result "r" in results
+    for r in results:
+        #For each box from all the boxes of the results "r"
+        for box in r.box:
+            #Store the ID of each detected object
+            cls = int(box.cls[0])
+            #Store the confidence level of each object
+            conf = float(box.conf[0])
+            #From the objects deteced, store only trucks using their unique class ID (cls)
+            if r.names[cls] == "truck":
+                #Extract bounding box coordinates
+                #Store upper left(x1,y1) and bottom right (x2,y2) coordinates and map them to be integers
+                x1,y1,x2,y2 = map(int, box.xyxy[0])
+                #Add the detected bounding box and confidence to the list of detected trucks 
+                detections.append([x1,y1,x2,y2], conf, None)
+
+    
