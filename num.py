@@ -14,4 +14,16 @@ tracker = DeepSort(max_age=30, n_init=3, nms_max_overlap=1.0)
 #nms_max_overlap determines how much overlap between bounding boxes are allowed before they're considered dupes
 
 #Video capture ovject created to read from recording
-capture = cv2.VideoCapture("video.mp4")
+capture = cv2.VideoCapture("SampleTruck.mp4")
+
+#Creates a loop as long as the video feed is open
+while capture.isOpened():
+    #One frame is read through the video 
+    #ret is the boolean value (True if frame red correctly) and frame is the image captured
+    ret, frame = capture.read()
+    #If loop created where if frame not captured properlt, then video feed closes while loop breaks
+    #else the model (YOLOv8n) runs object detection on the frame and stores the results in an object
+    if(ret == "False"):
+        break
+    else:
+        results = model(frame)
