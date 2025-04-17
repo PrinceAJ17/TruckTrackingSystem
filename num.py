@@ -14,7 +14,7 @@ tracker = DeepSort(max_age=30, n_init=3, nms_max_overlap=1.0)
 #nms_max_overlap determines how much overlap between bounding boxes are allowed before they're considered dupes
 
 #Video capture ovject created to read from recording
-capture = cv2.VideoCapture("../SampleTruck.mp4")
+capture = cv2.VideoCapture("../IMG_0841.mp4")
 
 #Creates a loop as long as the video feed is open
 while capture.isOpened():
@@ -23,9 +23,10 @@ while capture.isOpened():
     ret, frame = capture.read()
     #If loop created where if frame not captured properlt, then video feed closes while loop breaks
     #else the model (YOLOv8n) runs object detection on the frame and stores the results in an object
-    if(ret == "False"):
+    if not ret:
         break
     else:
+        #Increased confidence from 0.25 default to 0.5 for accurate detection
         results = model(frame)
 
     #Creating an empty list for detected trucks
@@ -69,9 +70,24 @@ while capture.isOpened():
             #Writes green text of Truck ID
             cv2.putText(frame, f"Truck {track_id}", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
 
-    cv2.imshow("Truck Tracking", frame)
+    def rescale_frame(frame, percent):
+        width = int(frame.shape[1] * percent/ 100)
+        height = int(frame.shape[0] * percent/ 100)
+        dim = (width, height)
+        return cv2.resize(frame, dim, interpolation =cv2.INTER_AREA)
+    
+    def make_480p():
+        capture.set(3, 640)
+        capture.set(4, 480)
+
+    make_480p()
+    frame75 = rescale_frame(frame, 50)
+    cv2.imshow('frame75', frame75)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+    # cv2.imshow("Truck Tracking", frame)
+
 
 capture.release()
 cv2.destroyAllWindows()
